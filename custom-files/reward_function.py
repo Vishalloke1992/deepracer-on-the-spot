@@ -2,11 +2,15 @@ def reward_function(params):
     '''
     Example of penalize steering, which helps mitigate zig-zag behaviors
     '''
-    
+    reward = 1
     # Read input parameters
     distance_from_center = params['distance_from_center']
     track_width = params['track_width']
     steering = abs(params['steering_angle']) # Only need the absolute steering angle
+
+    all_wheels_on_track = params['all_wheels_on_track']
+    if not all_wheels_on_track:
+        return 1e-3
 
     # Calculate 3 marks that are farther and father away from the center line
     marker_1 = 0.1 * track_width
@@ -29,5 +33,12 @@ def reward_function(params):
     # Penalize reward if the car is steering too much
     if steering > ABS_STEERING_THRESHOLD:
         reward *= 0.8
+
+    #penalie if car is going too  slow
+    speed = params['speed']
+    if speed<1.0:
+        reward *= 1e-3
+    else:
+        reward *= speed/10
 
     return float(reward)
