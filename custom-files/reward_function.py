@@ -38,7 +38,7 @@ def reward_function(params):
     if speed >= MIN_SPEED:
         speed_reward = speed / MAX_SPEED
     else:
-    speed_reward = 0.5 * (speed / MIN_SPEED)  # penalize for being too slow
+        speed_reward = 0.5 * (speed / MIN_SPEED)  # penalize for being too slow
 
     # Reward for steering angle (penalize sharp turns)
     if steering_angle <= MAX_STEERING_ANGLE:
