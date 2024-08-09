@@ -26,19 +26,30 @@ def reward_function(params):
         reward = 0.1
     else:
         reward = 1e-3  # likely crashed/ close to off track
+        return reward
 
-    # Steering penality threshold, change the number based on your action space setting
-    ABS_STEERING_THRESHOLD = 15
-
-    # Penalize reward if the car is steering too much
-    if steering > ABS_STEERING_THRESHOLD:
-        reward *= 0.8
-
-    #penalie if car is going too  slow
+    MAX_SPEED = 4.0
+    MIN_SPEED = 2.0
+    MAX_STEERING_ANGLE = 15.0
     speed = params['speed']
-    if speed<1.0:
-        reward *= 1e-3
+    steering_angle = abs(params['steering_angle'])
+
+    # Reward for speed
+    if speed >= MIN_SPEED:
+        speed_reward = speed / MAX_SPEED
     else:
-        reward *= speed/10
+    speed_reward = 0.5 * (speed / MIN_SPEED)  # penalize for being too slow
+
+    # Reward for steering angle (penalize sharp turns)
+    if steering_angle <= MAX_STEERING_ANGLE:
+        steering_reward = 1.0
+    else:
+        steering_reward = 1.0 - (steering_angle / 50.0)  # gradually reduce reward as steering angle increases
+
+    # Combine the rewards
+    comp_reward = speed_reward * steering_reward
+
+    # Ensure the reward is non-negative
+    reward = max(comp_reward+reward, 0.01)
 
     return float(reward)
